@@ -16,8 +16,8 @@ if pid1 == 0:  # Inside child
 
         pid3 = os.fork()  # Inside great-grandchild
         if pid3 == 0:
-            print(f"Great-grandchild: PID={os.getpid()}")
-            print(f"Grandchild's: PPID={os.getppid()}")
+            print(f"\nGreat-grandchild: PID={os.getpid()}")
+            print(f"\nGrandchild's: PPID={os.getppid()}")
             time.sleep(30)
         else:
             time.sleep(30)
