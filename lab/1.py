@@ -3,7 +3,7 @@ import os
 
 names = ['pedro', 'matias', 'ruby']
 pid = os.fork()
-
+print(f'Original list: {names}')
 if pid == 0:  # Hijo
     names.append('child-added')
     print(f"[CHILD ] PID={os.getpid()} id(names)={id(names)} -> {names}")
