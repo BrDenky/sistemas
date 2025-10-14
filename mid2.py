@@ -15,7 +15,8 @@ def create_chain_processes(n, current_process=1):
     
     # Mostrar información del proceso actual
     if current_process == 1:
-        print(f"[Parent] pid={pid}  ppid={ppid}  children_expected=1")
+        expected = 1 if n > 1 else 0
+        print(f"[Parent] pid={pid}  ppid={ppid}  children_expected={expected}", flush=True)
     else:
         print(f"[Child {current_process-1}] pid={pid}  ppid={ppid}  children_expected={'1' if current_process < n else '0'}")
     
