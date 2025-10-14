@@ -1,4 +1,4 @@
-# q1_memory_list.py
+# q1.py
 import os
 
 names = ['pedro', 'matias', 'ruby']
