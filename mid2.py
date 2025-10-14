@@ -1,53 +1,44 @@
 import os
 import sys
 
-def create_chain_processes(n, current_process=1):
-    """
-    Crear una cadena de n procesos donde cada proceso crea exactamente un hijo.
-    
-    Args:
-        n: número total de procesos a crear en la cadena
-        current_process: número actual del proceso en la cadena
-    """
-    
+def create_chain_processes(n, current_process=1):    
     pid = os.getpid()
     ppid = os.getppid()
     
-    # Mostrar información del proceso actual
+    # We show information about the current process
     if current_process == 1:
         expected = 1 if n > 1 else 0
         print(f"[Parent] pid={pid}  ppid={ppid}  children_expected={expected}", flush=True)
     else:
         print(f"[Child {current_process-1}] pid={pid}  ppid={ppid}  children_expected={'1' if current_process < n else '0'}")
     
-    # Si aún no hemos creado todos los procesos en la cadena
+    # If we have not yet created all the processes in the chain
     if current_process < n:
         fork_pid = os.fork()
         
         if fork_pid == 0:
-            # Proceso hijo: continúa la cadena creando su propio hijo
+            # Child process: continues the chain by creating its own child
             create_chain_processes(n, current_process + 1)
             sys.exit(0)
         else:
-            # Proceso padre: espera a que termine el hijo
+            # Parent process: waits for the child to finish
             os.waitpid(fork_pid, 0)
 
 def main():
-    """Función principal del programa."""
     try:
         user_input = input("How many processes to create (including the parent)? n = ")
         n = int(user_input)
         
         if n < 1:
-            print("El número de procesos debe ser al menos 1")
+            print("The number of processes must be at least 1")
             return
         
         create_chain_processes(n)
         
     except ValueError:
-        print("Por favor, ingresa un número válido")
+        print("Please enter a valid number")
     except KeyboardInterrupt:
-        print("\nPrograma interrumpido por el usuario")
+        print("\nProgram interrupted by the user")
 
 if __name__ == "__main__":
     main()
