@@ -1,7 +1,8 @@
+# Second Exercise - Mateo Pilaquinga
 import os
 import sys
 
-def create_chain_processes(n, current_process=1):    
+def chain_process(n, current_process=1):    
     pid = os.getpid()
     ppid = os.getppid()
     
@@ -18,7 +19,7 @@ def create_chain_processes(n, current_process=1):
         
         if fork_pid == 0:
             # Child process: continues the chain by creating its own child
-            create_chain_processes(n, current_process + 1)
+            chain_process(n, current_process + 1)
             sys.exit(0)
         else:
             # Parent process: waits for the child to finish
@@ -26,19 +27,19 @@ def create_chain_processes(n, current_process=1):
 
 def main():
     try:
-        user_input = input("How many processes to create (including the parent)? n = ")
-        n = int(user_input)
+        input_n = input("How many processes to create (including the parent)? n = ")
+        n = int(input_n)
         
         if n < 1:
             print("The number of processes must be at least 1")
             return
         
-        create_chain_processes(n)
+        chain_process(n)
         
     except ValueError:
         print("Please enter a valid number")
     except KeyboardInterrupt:
-        print("\nProgram interrupted by the user")
+        print("\nProgram interrupted")
 
 if __name__ == "__main__":
     main()

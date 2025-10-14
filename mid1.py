@@ -1,19 +1,20 @@
+# First Exercise - Mateo Pilaquinga
 import os
 import sys
 
-def create_processes(n, process_num=1):   
+def star_proc(n, num_proc=1):   
     pid = os.getpid()
     ppid = os.getppid()
     
     # If it is the first process, it is the parent.
-    if process_num == 1:
+    if num_proc == 1:
         print(f"[Parent] pid={pid}  ppid={ppid}  children_expected={n-1}")
         
         # We create n-1 child processes
         for i in range(1, n):
             fork_pid = os.fork()
             if fork_pid == 0:
-                # Proceso hijo
+                # Child Process
                 print(f"[Child {i}] pid={os.getpid()}  ppid={os.getppid()}")
                 sys.exit(0)
         
@@ -21,23 +22,23 @@ def create_processes(n, process_num=1):
         for i in range(n - 1):
             os.wait()
     else:
-        print(f"[Child {process_num}] pid={pid}  ppid={ppid}")
+        print(f"[Child {num_proc}] pid={pid}  ppid={ppid}")
 
 def main():
     try:
-        user_input = input("How many processes to create (including the parent)? n = ")
-        n = int(user_input)
+        user = input("How many processes to create (including the parent)? n = ")
+        n = int(user)
         
         if n < 1:
             print("The number of processes must be at least 1")
             return
         
-        create_processes(n)
+        star_proc(n)
         
     except ValueError:
         print("Please enter a valid number")
     except KeyboardInterrupt:
-        print("\nProgram interrupted by the user")
+        print("\nProgram interrupted")
 
 if __name__ == "__main__":
     main()
