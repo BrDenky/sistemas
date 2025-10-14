@@ -1,54 +1,52 @@
 import os
 import sys
 
-def fail(msg: str, code: int = 1) -> None:
-    """Imprime un error y termina con código de salida no cero."""
-    print(f"Error: {msg}", file=sys.stderr, flush=True)
-    sys.exit(code)
+def create_processes(n, process_num=1):
+    """
+    Crear n procesos donde 1 es el parent y n-1 son children.
+    
+    Args:
+        n: número total de procesos a crear
+        process_num: número actual del proceso
+    """
+    
+    pid = os.getpid()
+    ppid = os.getppid()
+    
+    # Si es el primer proceso, es el padre
+    if process_num == 1:
+        print(f"[Parent] pid={pid}  ppid={ppid}  children_expected={n-1}")
+        
+        # Crear n-1 procesos hijo
+        for i in range(1, n):
+            fork_pid = os.fork()
+            if fork_pid == 0:
+                # Proceso hijo
+                print(f"[Child {i}] pid={os.getpid()}  ppid={os.getppid()}")
+                sys.exit(0)
+        
+        # El padre espera a que terminen todos los hijos
+        for i in range(n - 1):
+            os.wait()
+    else:
+        print(f"[Child {process_num}] pid={pid}  ppid={ppid}")
 
-def main() -> None:
-    # --- Entrada del usuario ---
+def main():
+    """Función principal del programa."""
     try:
-        n_str = input("How many processes to create (including the parent)? n = ")
-        n = int(n_str)
-    except Exception:
-        fail("Invalid input (must be an integer).")
-
-    if n < 1:
-        fail("n must be >= 1 (includes the initial parent).")
-
-    parent_pid = os.getpid()
-    children_to_create = n - 1
-
-    # --- Creación de hijos directos ---
-    for i in range(1, n):  # i = 1..(n-1)
-        try:
-            pid = os.fork()
-        except OSError as e:
-            fail(f"fork() failed: {e}")
-
-        if pid == 0:
-            # Proceso hijo: imprime su info y termina.
-            print(f"[Child {i}] pid={os.getpid()}  ppid={os.getppid()}", flush=True)
-            # Importante: terminar sin ejecutar código del padre.
-            os._exit(0)
-
-    # --- Proceso padre: imprime su info y espera a los hijos ---
-    print(f"[Parent] pid={parent_pid}  ppid={os.getppid()}  children_expected={children_to_create}", flush=True)
-
-    reaped = 0
-    # Recolecta a todos los hijos para evitar zombis.
-    while True:
-        try:
-            wpid, status = os.wait()
-            reaped += 1
-        except ChildProcessError:
-            # No quedan hijos por esperar.
-            break
-
-    if reaped != children_to_create:
-        print(f"[Parent] Warning: expected to reap {children_to_create} children but reaped {reaped}.",
-              file=sys.stderr, flush=True)
+        user_input = input("How many processes to create (including the parent)? n = ")
+        n = int(user_input)
+        
+        if n < 1:
+            print("El número de procesos debe ser al menos 1")
+            return
+        
+        create_processes(n)
+        
+    except ValueError:
+        print("Por favor, ingresa un número válido")
+    except KeyboardInterrupt:
+        print("\nPrograma interrumpido por el usuario")
 
 if __name__ == "__main__":
     main()
